@@ -13,10 +13,15 @@
     <input id="item-width" type="number" placeholder="Item Width">
     <input id="item-quantity" type="number" placeholder="Item Quantity">
   </form>
+  <button id="calculate">Calculate</button>
+  <div class="result">
+    <div class="result__diagram"></div>
+    <div class="result__specs"></div>
+  </div>
   <form class="settings">
-    <select class="unit">
-      <option value="inches">in</option>
-      <option value="cm">cm</option>
+    <select id="unit">
+      <option value="inches" class="unit">in</option>
+      <option value="centimeters" class="unit">cm</option>
     </select>
   </form>
   <script src="assets/scripts/script.js"></script>
