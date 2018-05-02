@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +8,32 @@
   <title>Document</title>
   <link rel="stylesheet" href="assets/styles/style.css">
 </head>
+
 <body>
+  <div class="container">
   <form class="calculator">
     <input id="wall-width" type="number" placeholder="Wall Width">
     <input id="item-width" type="number" placeholder="Item Width">
     <input id="item-quantity" type="number" placeholder="Item Quantity">
+    <input id="side-margins" type="number" placeholder="Margins">
   </form>
   <button id="calculate">Calculate</button>
   <div class="result">
-    <div class="result__diagram"></div>
+    <div class="result__outer-wall">
+      <div class="result__inner-wall"></div>
+    </div>
     <div class="result__specs"></div>
   </div>
   <form class="settings">
-    <select id="unit">
-      <option value="inches" class="unit">in</option>
-      <option value="centimeters" class="unit">cm</option>
-    </select>
+    <label for="unit">Units:
+      <select id="unit">
+        <option value="inches" class="unit">in</option>
+        <option value="centimeters" class="unit">cm</option>
+      </select>
+    </label>
   </form>
+  </div>
   <script src="assets/scripts/script.js"></script>
 </body>
+
 </html>
