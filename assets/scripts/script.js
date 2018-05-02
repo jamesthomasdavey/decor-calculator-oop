@@ -59,22 +59,18 @@ function doEverything() {
   resultDiagram.innerHTML = resultDiagramHTML;
   resultDiagram.addEventListener(`click`, function(e) {
     if (e.target.classList.contains(`wall-item`)) {
+      let parentPos = e.target.parentNode.getBoundingClientRect();
+      let childPos = e.target.getBoundingClientRect();
+      let relativePos = childPos.left - parentPos.left;
+      let centerPoint = ((relativePos / e.target.parentNode.scrollWidth) + ((myItemWidth/myWallWidth) / 2)) * myWallWidth;
+      centerPoint = rounder(centerPoint);
       let i = e.target.getAttribute(`id`);
-      let centerPoint = wallItems[i].center;
+      // let centerPoint = wallItems[i].center;
       resultSpecs.innerHTML = `<h2>Item ${Number(wallItems[i].number) + 1}</h2>
       <p>Center: ${centerPoint}</p>`;
     }
   })
 }
-
-
-
-
-
-
-
-
-
 
 function WallItem(i, myWallWidth, myItemWidth, myItemQuantity) {
   this.number = `${i}`;
@@ -86,8 +82,53 @@ function WallItem(i, myWallWidth, myItemWidth, myItemQuantity) {
   this.right = this.center + (myItemWidth/2);
 }
 
+function displaySpecs(e) {
 
+}
 
+function rounder(num) {
+  let myUnit = unit[document.querySelector(`#unit`).selectedIndex].value;
+  if (myUnit === `inches`) {
+    return toFraction(Math.round(16 * num) / 16) + `"`;
+  } else {
+    return Math.round(10 * num) / 10 + `cm`;
+  }
+}
+
+let toFraction = num => {
+  if (num % 1 === 0) {
+    return num.toString();
+  } else {
+    let newNum = ``;
+    newNum += num - num % 1;
+    newNum += ` ${decimalToFraction(num % 1)}`;
+    return newNum;
+  }
+};
+
+let decimalToFraction = number => {
+  var numerator = 1.0;
+  var denominator = 1.0;
+  if (number === 0.0) {
+    return "0/1";
+  }
+  var isNegative = number < 0.0;
+  if (isNegative) {
+    number = number - number * 2;
+  }
+  while (numerator / denominator !== number) {
+    if (numerator / denominator < number) {
+      numerator++;
+      denominator--;
+    } else if (numerator / denominator > number) {
+      denominator++;
+    }
+  }
+  if (isNegative) {
+    return "-" + numerator.toString() + "/" + denominator.toString();
+  }
+  return numerator.toString() + "/" + denominator.toString();
+};
 
 
 
