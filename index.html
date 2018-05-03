@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>Gallerizer</title>
   <link rel="stylesheet" href="assets/styles/style.css">
 </head>
 
@@ -18,27 +18,28 @@
     <input id="item-width" type="number" placeholder="ITEM WIDTH">
     <input id="item-quantity" type="number" placeholder="ITEM QUANTITY">
     <button id="calculate">Calculate</button>
-    <div class="margin__section">
-      <button class="margin__decrease">-</button>
-      <div class="margin__content">
-        <span class="margin__label">MARGIN:</span>
-        <span class="margin__amount">0%</span>
+    <div class="margin__and__results">
+      <div class="margin__section">
+        <button class="margin__decrease">-</button>
+        <div class="margin__content">
+          <span class="margin__label">ADD MARGIN:</span>
+          <span class="margin__amount">0%</span>
+        </div>
+        <button class="margin__increase">+</button>
       </div>
-      <button class="margin__increase">+</button>
-    </div>
-    <div class="result">
-      <div class="result__outer-wall">
-        <div class="result__inner-wall"></div>
+      <div class="result">
+        <div class="result__outer-wall">
+          <div class="result__inner-wall"></div>
+        </div>
+        <div class="result__specs"></div>
       </div>
-      <div class="result__specs"></div>
     </div>
     <form class="settings">
-      <label for="unit">Units:
-        <select id="unit">
-          <option value="inches" class="unit">in</option>
-          <option value="centimeters" class="unit">cm</option>
-        </select>
-      </label>
+      <select id="unit">
+        <option value="" disabled selected>UNITS</option>
+        <option value="inches" class="unit">INCHES</option>
+        <option value="centimeters" class="unit">CENTIMETERS</option>
+      </select>
     </form>
   </div>
   <script src="assets/scripts/script.js"></script>

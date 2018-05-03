@@ -108,8 +108,14 @@ button {
   cursor: pointer;
 }
 
+.margin__and__results {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.4s all ease;
+}
+
 .margin__section {
-  width: 70%;
+  width: 75%;
   max-width: 280px;
   margin: 0 auto;
   display: flex;
@@ -127,7 +133,7 @@ button {
   top: -3px;
   border: 0;
   margin: auto 0;
-  width: 5rem;
+  width: 4rem;
   font-size: 2rem;
 }
 

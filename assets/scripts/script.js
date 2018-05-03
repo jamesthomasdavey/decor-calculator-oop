@@ -1,3 +1,7 @@
+/*****************************
+ ************ GLOBAL VARIABLES
+ *****************************/
+
 // get form elements
 const bodyEl = document.querySelector(`body`);
 const wallWidthEl = document.querySelector(`#wall-width`);
@@ -12,6 +16,7 @@ const marginIncreaseEl = document.querySelector(`.margin__increase`);
 const calculateEl = document.querySelector(`#calculate`);
 
 // get result elements
+const marginAndResultsEl = document.querySelector(`.margin__and__results`);
 const resultSpecsEl = document.querySelector(`.result__specs`);
 const resultInnerWallEl = document.querySelector(`.result__inner-wall`);
 
@@ -20,34 +25,62 @@ let wallItems = [];
 let margin = 0;
 let maxMargin = 0;
 
-// enable trigger to run program
+/*****************************
+ *********** PROGRAM FUNCTIONS
+ *****************************/
+
 function runProgram() {
   calculateEl.addEventListener(`click`, evaluate);
   bodyEl.addEventListener(`keypress`, function (e) {
     if (e.keyCode === 13) {
       evaluate();
     }
-  })
+  });
 }
 
 // evaluate form for errors then calculate
 function evaluate() {
+  let i = null;
+  if (!!document.querySelector(`h2.wall-item-title`)) {
+    let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
+    id = id.split(`-`);
+    i = Number(id[id.length - 1]);
+  }
+
   let wallWidth = Number(wallWidthEl.value);
   let itemWidth = Number(itemWidthEl.value);
   let itemQuantity = Number(itemQuantityEl.value);
   let unit = unitEl[document.querySelector(`#unit`).selectedIndex].value;
   maxMargin = Math.floor((wallWidth - (itemWidth * itemQuantity)) / (wallWidth) / 2 * 100);
-  if (margin > maxMargin) {
-    setMargin(maxMargin);
+
+  if (wallWidth == `` || itemWidth == `` || itemQuantity == ``) {
+    console.log(`error1`);
+  } else if (itemWidth * itemQuantity > wallWidth) {
+    console.log(`error2`);
+  } else if (wallWidth <= 0 || itemWidth <= 0 || itemQuantity <= 0) {
+    console.log(`error3`);
+  } else if (itemQuantity % 1 !== 0) {
+    console.log(`error4`);
+  } else {
+    if (margin > maxMargin) {
+      setMargin(maxMargin);
+    }
+    let userValues = {
+      wallWidth,
+      itemWidth,
+      itemQuantity,
+      margin,
+      unit
+    };
+    calculate(userValues);
+    marginAndResultsEl.style.maxHeight = `${marginAndResultsEl.scrollHeight}px`;
+    if (i !== null) {
+      if (i > itemQuantityEl.value - 1) {
+        i = itemQuantityEl.value - 1;
+      }
+      displaySpecs(i);
+    }
   }
-  let userValues = {
-    wallWidth,
-    itemWidth,
-    itemQuantity,
-    margin,
-    unit
-  };
-  calculate(userValues);
 }
 
 // 
@@ -97,6 +130,79 @@ function WallItem(userValues, i) {
   this.center = rounder(number, unit);
 }
 
+function createDivs(wallItems) {
+  let divs = ``;
+  for (let i = 0; i < wallItems.length; i++) {
+    divs += `
+  <div class="wall-item" id="${i}" style="width: ${wallItems[i].widthPercent}%">
+    <p class="wall-item-number">${wallItems[i].number}</p>
+  </div>
+  `
+  }
+  return divs;
+}
+
+function displaySpecsTrigger(wallItems) {
+  resultInnerWallEl.addEventListener(`click`, function (e) {
+    let currentItem = e.target;
+    if (currentItem.classList.contains(`wall-item`)) {
+      let i = currentItem.getAttribute(`id`);
+      displaySpecs(i);
+    }
+  });
+}
+
+function displaySpecs(i) {
+  resultSpecsEl.innerHTML = `<h2 class="wall-item-title" id="wall-item-spec-${i}">Item ${wallItems[i].number}</h2>
+    <p>Center: ${wallItems[i].center}</p>`;
+  marginAndResultsEl.style.maxHeight = `${marginAndResultsEl.scrollHeight}px`;
+}
+
+function changeUnit() {
+  document.querySelector(`#unit`).addEventListener(`change`, function () {
+    setUnit();
+    reEvaluate();
+  });
+}
+
+function setUnit() {
+  if (unitEl[document.querySelector(`#unit`).selectedIndex].value === `inches`) {
+    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (in)`);
+    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (in)`);
+  } else {
+    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (cm)`);
+    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (cm)`);
+  }
+}
+
+function changeMargin() {
+  marginDecreaseEl.addEventListener(`click`, function () {
+    if (margin > 0) {
+      margin--;
+      marginAmountEl.innerHTML = `${margin}%`;
+      evaluate();
+    }
+  });
+  marginIncreaseEl.addEventListener(`click`, function () {
+    if (margin < maxMargin) {
+      margin++;
+      marginAmountEl.innerHTML = `${margin}%`;
+      evaluate();
+    }
+  });
+}
+
+function setMargin(i) {
+  margin = i;
+  marginAmountEl.innerHTML = `${margin}%`;
+  evaluate();
+}
+
+
+/*****************************
+ ********* FRACTION CONVERSION
+ *****************************/
+
 function rounder(number, unit) {
   if (unit === `inches`) {
     return toFraction(Math.round(16 * number) / 16) + `"`;
@@ -140,93 +246,9 @@ function decimalToFraction(number) {
   return numerator.toString() + "/" + denominator.toString();
 };
 
-function createDivs(wallItems) {
-  let divs = ``;
-  for (let i = 0; i < wallItems.length; i++) {
-    divs += `
-  <div class="wall-item" id="${i}" style="width: ${wallItems[i].widthPercent}%">
-    <p class="wall-item-number">${wallItems[i].number}</p>
-  </div>
-  `
-  }
-  return divs;
-}
-
-function displaySpecsTrigger(wallItems) {
-  resultInnerWallEl.addEventListener(`click`, function (e) {
-    let currentItem = e.target;
-    if (currentItem.classList.contains(`wall-item`)) {
-      let i = currentItem.getAttribute(`id`);
-      displaySpecs(i);
-      calculateAfterSpecs(i);
-    }
-  });
-}
-
-function displaySpecs(i) {
-  resultSpecsEl.innerHTML = `<h2 class="wall-item-title" id="wall-item-spec-${i}">Item ${wallItems[i].number}</h2>
-    <p>Center: ${wallItems[i].center}</p>`;
-}
-
-function changeUnit() {
-  document.querySelector(`#unit`).addEventListener(`change`, function () {
-    setUnit();
-    reEvaluate();
-  });
-}
-
-function setUnit() {
-  if (unitEl[document.querySelector(`#unit`).selectedIndex].value === `inches`) {
-    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (in)`);
-    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (in)`);
-  } else {
-    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (cm)`);
-    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (cm)`);
-  }
-}
-
-function calculateAfterSpecs(i) {
-  calculateEl.addEventListener(`click`, function () {
-    evaluate();
-    displaySpecs(i);
-  });
-}
-
-function changeMargin() {
-  marginDecreaseEl.addEventListener(`click`, function () {
-    if (margin > 0) {
-      margin--;
-      marginAmountEl.innerHTML = `${margin}%`;
-      reEvaluate();
-    }
-  });
-  marginIncreaseEl.addEventListener(`click`, function () {
-    if (margin < maxMargin) {
-      margin++;
-      marginAmountEl.innerHTML = `${margin}%`;
-      reEvaluate();
-    }
-  });
-}
-
-function setMargin(i) {
-  margin = i;
-  marginAmountEl.innerHTML = `${margin}%`;
-  reEvaluate();
-}
-
-function reEvaluate() {
-  let i = null;
-  if (!!document.querySelector(`h2.wall-item-title`)) {
-    let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
-    id = id.split(`-`);
-    i = Number(id[id.length - 1]);
-  }
-  evaluate();
-  if (i !== null) {
-    displaySpecs(i);
-  }
-}
+/*****************************
+ ***************** RUN PROGRAM
+ *****************************/
 
 runProgram();
 changeMargin();
