@@ -1,6 +1,27 @@
+// get form elements
+const bodyEl = document.querySelector(`body`);
+const wallWidthEl = document.querySelector(`#wall-width`);
+const itemWidthEl = document.querySelector(`#item-width`);
+const itemQuantityEl = document.querySelector(`#item-quantity`);
+const unitEl = document.getElementsByClassName(`unit`);
+const marginAmountEl = document.querySelector(`.margin__amount`);
+const marginDecreaseEl = document.querySelector(`.margin__decrease`);
+const marginIncreaseEl = document.querySelector(`.margin__increase`);
+
+// get submit elements
+const calculateEl = document.querySelector(`#calculate`);
+
+// get result elements
+const resultSpecsEl = document.querySelector(`.result__specs`);
+const resultInnerWallEl = document.querySelector(`.result__inner-wall`);
+
+// create items to be accessible in global scope
+let wallItems = [];
+let margin = 0;
+let maxMargin = 0;
+
+// enable trigger to run program
 function runProgram() {
-  const calculateEl = document.querySelector(`#calculate`);
-  const bodyEl = document.querySelector(`body`);
   calculateEl.addEventListener(`click`, evaluate);
   bodyEl.addEventListener(`keypress`, function (e) {
     if (e.keyCode === 13) {
@@ -9,42 +30,41 @@ function runProgram() {
   })
 }
 
+// evaluate form for errors then calculate
 function evaluate() {
-  const wallWidthEl = document.querySelector(`#wall-width`);
-  const itemWidthEl = document.querySelector(`#item-width`);
-  const itemQuantityEl = document.querySelector(`#item-quantity`);
-  const marginsEl = document.querySelector(`#side-margins`);
-  const unitEl = document.getElementsByClassName(`unit`);
-
-
   let wallWidth = Number(wallWidthEl.value);
   let itemWidth = Number(itemWidthEl.value);
   let itemQuantity = Number(itemQuantityEl.value);
-  let margins = Number(marginsEl.value);
   let unit = unitEl[document.querySelector(`#unit`).selectedIndex].value;
+  maxMargin = Math.floor((wallWidth - (itemWidth * itemQuantity)) / (wallWidth) / 2 * 100);
+  if (margin > maxMargin) {
+    setMargin(maxMargin);
+  }
   let userValues = {
     wallWidth,
     itemWidth,
     itemQuantity,
-    margins,
+    margin,
     unit
   };
   calculate(userValues);
 }
 
+// 
 function calculate(userValues) {
-  const resultInnerWallEl = document.querySelector(`.result__inner-wall`);
-  const resultSpecsEl = document.querySelector(`.result__specs`);
-  userValues = includeMargins(userValues);
-  let wallItems = createWallItems(userValues);
+  userValues = includeMargin(userValues);
+  wallItems = createWallItems(userValues);
   resultInnerWallEl.innerHTML = createDivs(wallItems);
-  displaySpecs(resultInnerWallEl, resultSpecsEl, wallItems);
-
+  displaySpecsTrigger(wallItems);
 }
 
-function includeMargins(userValues) {
-  let {margins, wallWidth} = userValues;
-  let wallWidthPercent = 100 - (margins * 2);
+// accounts for margin by reducing wallwidth
+function includeMargin(userValues) {
+  let {
+    margin,
+    wallWidth
+  } = userValues;
+  let wallWidthPercent = 100 - (margin) * 2;
   let newWidth = (wallWidthPercent / 100) * wallWidth;
   userValues.leftOver = (wallWidth - (wallWidth * wallWidthPercent / 100)) / 2;
   userValues.wallWidth = newWidth;
@@ -69,187 +89,146 @@ function WallItem(userValues, i) {
     leftOver,
     unit
   } = userValues;
-  this.title = `Item ${i+1}`;
-  this.wallWidth = wallWidth;
+  this.number = `${i+1}`;
   this.width = itemWidth;
   this.widthPercent = (itemWidth / wallWidth) * 100;
-  this.unit = unit;
   let spaceBetween = (wallWidth - itemWidth * itemQuantity) / (itemQuantity + 1);
-  this.center = ((i + 1) * spaceBetween) + (i * itemWidth) + (itemWidth / 2) + leftOver;
+  let number = ((i + 1) * spaceBetween) + (i * itemWidth) + (itemWidth / 2) + leftOver;
+  this.center = rounder(number, unit);
 }
+
+function rounder(number, unit) {
+  if (unit === `inches`) {
+    return toFraction(Math.round(16 * number) / 16) + `"`;
+  } else {
+    return Math.round(10 * number) / 10 + `cm`;
+  }
+}
+
+function toFraction(number) {
+  if (number % 1 === 0) {
+    return number.toString();
+  } else {
+    let newNumber = ``;
+    newNumber += number - number % 1;
+    newNumber += ` ${decimalToFraction(number % 1)}`;
+    return newNumber;
+  }
+};
+
+function decimalToFraction(number) {
+  var numerator = 1.0;
+  var denominator = 1.0;
+  if (number === 0.0) {
+    return "0/1";
+  }
+  var isNegative = number < 0.0;
+  if (isNegative) {
+    number = number - number * 2;
+  }
+  while (numerator / denominator !== number) {
+    if (numerator / denominator < number) {
+      numerator++;
+      denominator--;
+    } else if (numerator / denominator > number) {
+      denominator++;
+    }
+  }
+  if (isNegative) {
+    return "-" + numerator.toString() + "/" + denominator.toString();
+  }
+  return numerator.toString() + "/" + denominator.toString();
+};
 
 function createDivs(wallItems) {
   let divs = ``;
   for (let i = 0; i < wallItems.length; i++) {
     divs += `
-    <div class="wall-item" id="${i}" style="width: ${wallItems[i].widthPercent}%">
-      <p class="wall-item-title">${wallItems[i].title}</p>
-    </div>
-    `
+  <div class="wall-item" id="${i}" style="width: ${wallItems[i].widthPercent}%">
+    <p class="wall-item-number">${wallItems[i].number}</p>
+  </div>
+  `
   }
   return divs;
 }
 
-function displaySpecs(resultInnerWallEl, resultSpecsEl, wallItems) {
+function displaySpecsTrigger(wallItems) {
   resultInnerWallEl.addEventListener(`click`, function (e) {
     let currentItem = e.target;
     if (currentItem.classList.contains(`wall-item`)) {
       let i = currentItem.getAttribute(`id`);
-      // centerPoint = rounder(centerPoint);
-      resultSpecsEl.innerHTML = `<h2>${wallItems[i].title}</h2>
-      <p>Center: ${wallItems[i].center}</p>`;
+      displaySpecs(i);
+      calculateAfterSpecs(i);
     }
   });
 }
 
+function displaySpecs(i) {
+  resultSpecsEl.innerHTML = `<h2 class="wall-item-title" id="wall-item-spec-${i}">Item ${wallItems[i].number}</h2>
+    <p>Center: ${wallItems[i].center}</p>`;
+}
+
+function changeUnit() {
+  document.querySelector(`#unit`).addEventListener(`change`, function () {
+    setUnit();
+    reEvaluate();
+  });
+}
+
+function setUnit() {
+  if (unitEl[document.querySelector(`#unit`).selectedIndex].value === `inches`) {
+    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (in)`);
+    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (in)`);
+  } else {
+    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (cm)`);
+    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (cm)`);
+  }
+}
+
+function calculateAfterSpecs(i) {
+  calculateEl.addEventListener(`click`, function () {
+    evaluate();
+    displaySpecs(i);
+  });
+}
+
+function changeMargin() {
+  marginDecreaseEl.addEventListener(`click`, function () {
+    if (margin > 0) {
+      margin--;
+      marginAmountEl.innerHTML = `${margin}%`;
+      reEvaluate();
+    }
+  });
+  marginIncreaseEl.addEventListener(`click`, function () {
+    if (margin < maxMargin) {
+      margin++;
+      marginAmountEl.innerHTML = `${margin}%`;
+      reEvaluate();
+    }
+  });
+}
+
+function setMargin(i) {
+  margin = i;
+  marginAmountEl.innerHTML = `${margin}%`;
+  reEvaluate();
+}
+
+function reEvaluate() {
+  let i = null;
+  if (!!document.querySelector(`h2.wall-item-title`)) {
+    let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
+    id = id.split(`-`);
+    i = Number(id[id.length - 1]);
+  }
+  evaluate();
+  if (i !== null) {
+    displaySpecs(i);
+  }
+}
+
 runProgram();
-
-
-
-
-
-// let {wallWidth, itemWidth, itemQuantity, unit} = userValues;
-
-
-
-
-
-
-
-// const userValues = {
-//   wallWidth: document.querySelector(`#wall-width`),
-//   itemWidth: document.querySelector(`#item-width`),
-//   itemQuantity: document.querySelector(`#item-quantity`),
-// };
-
-// let {
-//   wallWidth,
-//   itemWidth,
-//   itemQuantity
-// } = userValues;
-
-// let unit = document.getElementsByClassName(`unit`);
-// const calculateButton = document.querySelector(`#calculate`);
-// let resultDiagram = document.querySelector(`.result__diagram`);
-// let resultSpecs = document.querySelector(`.result__specs`);
-
-// function setUnit() {
-//   if (unit[document.querySelector(`#unit`).selectedIndex].value === `inches`) {
-//     wallWidth.setAttribute(`placeholder`, `Wall Width (in)`);
-//     itemWidth.setAttribute(`placeholder`, `Item Width (in)`)
-//   } else {
-//     wallWidth.setAttribute(`placeholder`, `Wall Width (cm)`);
-//     itemWidth.setAttribute(`placeholder`, `Item Width (cm)`);
-//   }
-//   document.querySelector(`#unit`).addEventListener(`change`, setUnit);
-// }
-
-// function clickCalculate() {
-//   calculateButton.addEventListener(`click`, doEverything);
-// }
-
-
-
-
-
-
-
-
-
-// function doEverything() {
-
-//   // gets user-inputted values from the form
-//   let myWallWidth = Number(wallWidth.value);
-//   let myItemWidth = Number(itemWidth.value);
-//   let myItemQuantity = Number(itemQuantity.value);
-//   let wallItems = [];
-//   for (let i=0; i<myItemQuantity; i++) {
-//     let wallItem = new WallItem(i, myWallWidth, myItemWidth, myItemQuantity);
-//     wallItems.push(wallItem);
-//   }
-//   let resultDiagramHTML = ``
-//   for (let i=0; i<wallItems.length; i++) {
-//     let newWallItem = `<div class="wall-item" id="${wallItems[i].number}" style="width: ${wallItems[i].widthPercent}%">
-//     <p class="wall-item-number">${Number(wallItems[i].number) + 1}</p>
-//     </div>`;
-//     resultDiagramHTML += newWallItem;
-//   }
-//   resultDiagram.innerHTML = resultDiagramHTML;
-//   resultDiagram.addEventListener(`click`, function(e) {
-//     if (e.target.classList.contains(`wall-item`)) {
-//       let parentPos = e.target.parentNode.getBoundingClientRect();
-//       let childPos = e.target.getBoundingClientRect();
-//       let relativePos = childPos.left - parentPos.left;
-//       let centerPoint = ((relativePos / e.target.parentNode.scrollWidth) + ((myItemWidth/myWallWidth) / 2)) * myWallWidth;
-//       centerPoint = rounder(centerPoint);
-//       let i = e.target.getAttribute(`id`);
-//       // let centerPoint = wallItems[i].center;
-//       resultSpecs.innerHTML = `<h2>Item ${Number(wallItems[i].number) + 1}</h2>
-//       <p>Center: ${centerPoint}</p>`;
-//     }
-//   })
-// }
-
-// function WallItem(i, myWallWidth, myItemWidth, myItemQuantity) {
-//   this.number = `${i}`;
-//   this.width = myItemWidth;
-//   this.widthPercent = (myItemWidth / myWallWidth) * 100;
-//   let spaceBetween = (myWallWidth - myItemWidth * myItemQuantity) / (myItemQuantity + 1);
-//   this.center = ((i + 1) * spaceBetween) + (i * myItemWidth) + (myItemWidth/2);
-//   this.left = this.center - (myItemWidth/2);
-//   this.right = this.center + (myItemWidth/2);
-// }
-
-// function displaySpecs(e) {
-
-// }
-
-// function rounder(num) {
-//   let myUnit = unit[document.querySelector(`#unit`).selectedIndex].value;
-//   if (myUnit === `inches`) {
-//     return toFraction(Math.round(16 * num) / 16) + `"`;
-//   } else {
-//     return Math.round(10 * num) / 10 + `cm`;
-//   }
-// }
-
-// let toFraction = num => {
-//   if (num % 1 === 0) {
-//     return num.toString();
-//   } else {
-//     let newNum = ``;
-//     newNum += num - num % 1;
-//     newNum += ` ${decimalToFraction(num % 1)}`;
-//     return newNum;
-//   }
-// };
-
-// let decimalToFraction = number => {
-//   var numerator = 1.0;
-//   var denominator = 1.0;
-//   if (number === 0.0) {
-//     return "0/1";
-//   }
-//   var isNegative = number < 0.0;
-//   if (isNegative) {
-//     number = number - number * 2;
-//   }
-//   while (numerator / denominator !== number) {
-//     if (numerator / denominator < number) {
-//       numerator++;
-//       denominator--;
-//     } else if (numerator / denominator > number) {
-//       denominator++;
-//     }
-//   }
-//   if (isNegative) {
-//     return "-" + numerator.toString() + "/" + denominator.toString();
-//   }
-//   return numerator.toString() + "/" + denominator.toString();
-// };
-
-
-
-
-// setUnit();
-// clickCalculate();
+changeMargin();
+changeUnit();
+setUnit();
