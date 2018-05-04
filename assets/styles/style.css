@@ -1,4 +1,4 @@
-/* @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400"); */
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400");
 .clearfix::after {
   content: "";
   clear: both;
@@ -279,6 +279,19 @@ div.wall-item {
   margin: auto 0;
   border: 1px solid black;
   background: #CCCCCC;
+  color: black;
+}
+
+div.wall-item:nth-child(3n + 1) {
+  background: #A9B7C0;
+}
+
+div.wall-item:nth-child(3n + 2) {
+  background: #C7D8C6;
+}
+
+div.wall-item:nth-child(3n + 3) {
+  background: #EFD9C1;
 }
 
 .wall-item:hover {
@@ -320,6 +333,10 @@ div.wall-item {
   font-weight: bold;
   text-align: center;
   padding-bottom: 2rem;
+}
+
+.wall-item-title {
+  padding-bottom: 1rem;
 }
 
 /*****************************
