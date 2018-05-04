@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400");
+/* @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400"); */
 .clearfix::after {
   content: "";
   clear: both;
@@ -39,7 +39,7 @@ body {
 }
 
 .container {
-  min-width: 400px;
+  min-width: 360px;
   padding-top: 3.2rem;
   transition: 0.3s all ease;
 }
@@ -139,7 +139,7 @@ button:hover {
   top: -3px;
   border: 0;
   margin: auto 0;
-  width: 4rem;
+  width: 2.5rem;
   font-size: 2rem;
 }
 
@@ -180,6 +180,7 @@ button:hover {
   border-bottom: 2px solid #ffffff;
   outline: 0;
   border-radius: 0;
+  appearance: none;
   -webkit-appearance: none;
 }
 

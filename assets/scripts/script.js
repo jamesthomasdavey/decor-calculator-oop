@@ -43,8 +43,11 @@ function runProgram() {
 
 // evaluate form for errors then calculate
 function evaluate() {
+
+  //hides errors that may have occured earlier
   errorEl.classList.add(`hide`);
-  errorDescriptionEl.innerHTML = ``;
+
+  // checks if item specs were previously on display, and gets reference number
   let i = null;
   if (!!document.querySelector(`h2.wall-item-title`)) {
     let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
@@ -52,12 +55,14 @@ function evaluate() {
     i = Number(id[id.length - 1]);
   }
 
+  // grabs values from html elements
   let wallWidth = Number(wallWidthEl.value);
   let itemWidth = Number(itemWidthEl.value);
   let itemQuantity = Number(itemQuantityEl.value);
   let unit = unitEl[document.querySelector(`#unit`).selectedIndex].value;
   maxMargin = Math.floor((wallWidth - (itemWidth * itemQuantity)) / (wallWidth) / 2 * 100);
 
+  // scans for errors, and sends error code to error function
   if (wallWidth == `` || itemWidth == `` || itemQuantity == ``) {
     error(1);
   } else if (wallWidth <= 0 || itemWidth <= 0 || itemQuantity <= 0) {
@@ -67,9 +72,13 @@ function evaluate() {
   } else if (itemQuantity % 1 !== 0) {
     error(4);
   } else {
+
+    // if margin is too large, it sets margin to maximum
     if (margin > maxMargin) {
       setMargin(maxMargin);
     }
+
+  // stores values into object
     let userValues = {
       wallWidth,
       itemWidth,
@@ -77,11 +86,17 @@ function evaluate() {
       margin,
       unit
     };
+
+    // runs calculation function using uservalues as an argument
     calculate(userValues);
+
+    // makes margin visible and takes you there
     marginAndResultsEl.style.maxHeight = `${marginAndResultsEl.scrollHeight}px`;
     setTimeout(function () {
       window.location.href = `#margin__and__results`;
     }, 201);
+
+    // uses the reference number from before to display the correct specs
     if (i !== null) {
       if (i > itemQuantityEl.value - 1) {
         i = itemQuantityEl.value - 1;
@@ -91,6 +106,7 @@ function evaluate() {
   }
 }
 
+// displays error messages depending on error code
 function error(num) {
   switch (num) {
     case 1:
@@ -116,7 +132,7 @@ function error(num) {
   }
 }
 
-// 
+// main part of function
 function calculate(userValues) {
   userValues = includeMargin(userValues);
   wallItems = createWallItems(userValues);
@@ -124,7 +140,7 @@ function calculate(userValues) {
   displaySpecsTrigger(wallItems);
 }
 
-// accounts for margin by reducing wallwidth
+// accounts for margin by replacing wallwidth with reduced size
 function includeMargin(userValues) {
   let {
     margin,
@@ -138,6 +154,7 @@ function includeMargin(userValues) {
   return userValues;
 }
 
+// creates a new object for each wall item
 function createWallItems(userValues) {
   let wallItems = [];
   for (let i = 0; i < userValues.itemQuantity; i++) {
@@ -147,6 +164,7 @@ function createWallItems(userValues) {
   return wallItems;
 }
 
+// constructor for wall items
 function WallItem(userValues, i) {
   let {
     wallWidth,
@@ -163,6 +181,7 @@ function WallItem(userValues, i) {
   this.center = rounder(number, unit);
 }
 
+// creates a div for each wall item
 function createDivs(wallItems) {
   let divs = ``;
   for (let i = 0; i < wallItems.length; i++) {
@@ -175,16 +194,16 @@ function createDivs(wallItems) {
   return divs;
 }
 
+// adds event listener to display specs for item corresponding to div
 function displaySpecsTrigger(wallItems) {
   resultInnerWallEl.addEventListener(`click`, function (e) {
     let currentItem = e.target;
     if (currentItem.classList.contains(`wall-item`)) {
       let i = currentItem.getAttribute(`id`);
       displaySpecs(i);
-      changeUnit();
       setTimeout(function () {
         window.location.href = "#result__specs";
-      }, 201);
+      }, 210);
     }
   });
 }
@@ -193,24 +212,13 @@ function displaySpecs(i) {
   resultSpecsEl.innerHTML = `<h2 class="wall-item-title" id="wall-item-spec-${i}">Item ${wallItems[i].number}</h2>
     <p>Center: ${wallItems[i].center}</p>`;
   marginAndResultsEl.style.maxHeight = `${marginAndResultsEl.scrollHeight}px`;
+  changeUnit();
 }
 
 function changeUnit() {
   document.querySelector(`#unit`).addEventListener(`change`, function () {
-    setUnit();
     evaluate();
   });
-}
-
-function setUnit() {
-  if (unitEl[document.querySelector(`#unit`).selectedIndex].value === `inches`) {
-    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (in)`);
-    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (in)`);
-  } else {
-    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (cm)`);
-    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (cm)`);
-  }
-  document.querySelector(`#unit`).addEventListener(`change`, setUnit);
 }
 
 function changeMargin() {
@@ -245,7 +253,6 @@ function resetForm() {
     margin = 0;
     marginAmountEl.innerHTML = `${margin}%`;
     wallWidthEl.focus();
-    window.location.href = `#container`;
   });
 }
 
@@ -339,8 +346,8 @@ function closeAbout() {
 
 runProgram();
 changeMargin();
-setUnit();
+resetForm();
+
 openNav();
 openAbout();
 closeAbout();
-resetForm();
