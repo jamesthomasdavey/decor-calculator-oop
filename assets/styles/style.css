@@ -30,13 +30,6 @@ body {
   height: 100%;
 }
 
-.heading {
-  height: 8rem;
-  padding-top: 2.5em;
-  background: #CA7B46;
-  border-bottom: 4px solid #f1f1ef;
-}
-
 .page-header {
   text-align: center;
   font-size: 2rem;
@@ -46,15 +39,16 @@ body {
 }
 
 .container {
-  padding-top: 2.7rem;
+  min-width: 400px;
+  padding-top: 3.2rem;
+  transition: 0.3s all ease;
 }
 
 /*****************************
 ************************ FORM
 *****************************/
 
-input,
-select {
+input {
   display: block;
   width: 70%;
   max-width: 360px;
@@ -72,15 +66,12 @@ select {
   border-radius: 0;
 }
 
-
-select {
-  -webkit-appearance: none;
-}
-
-
-
 ::placeholder {
   color: #ffffff;
+}
+
+#item-quantity {
+  margin-bottom: 3rem;
 }
 
 button {
@@ -105,19 +96,34 @@ button {
 
 #calculate:hover {
   background-color: #4D8699;
+}
+
+#reset {
+  display: block;
+  margin: 0 auto 2rem;
+  color: #ffffff;
+  background: transparent;
+  font-family: "Open Sans", sans-serif;
+  font-weight: normal;
+  font-size: .9rem;
+  border: 0;
+  outline: 0;
+}
+
+button:hover {
   cursor: pointer;
 }
 
 .margin__and__results {
   max-height: 0;
   overflow: hidden;
-  transition: 0.4s all ease;
+  transition: 0.2s all ease;
 }
 
 .margin__section {
   width: 75%;
   max-width: 280px;
-  margin: 0 auto;
+  margin: 0 auto 1rem;
   display: flex;
   justify-content: space-between;
 }
@@ -142,6 +148,124 @@ button {
   cursor: pointer;
 }
 
+/*****************************
+************************* NAV
+*****************************/
+
+.nav {
+  position: absolute;
+  z-index: 999;
+  left: -260px;
+  top: 0;
+  width: 260px;
+  height: 100%;
+  padding-top: 56px;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  background: #DFAE8B;
+  transition: 0.3s all ease;
+}
+
+#unit {
+  display: block;
+  width: 100%;
+  height: 56px;
+  padding: 0.5rem;
+  background: transparent;
+  color: #ffffff;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  border: 0;
+  border-bottom: 2px solid #ffffff;
+  outline: 0;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+
+#unit:hover {
+  cursor: pointer;
+}
+
+#about {
+  width: 100%;
+  height: 56px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #ffffff;
+  display: flex;
+  padding: 0.5rem;
+}
+
+#about:hover {
+  cursor: pointer;
+}
+
+#about > p {
+  margin: auto 0;
+}
+
+.nav__about {
+  position: absolute;
+  z-index: 9995;
+  left: -260px;
+  top: 0;
+  width: 260px;
+  height: 100%;
+  padding-top: 5rem;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  background: #CA7B46;
+  transition: 0.3s all ease;
+}
+
+.nav__about p {
+  margin-bottom: 2rem;
+}
+
+.nav__about-close {
+  text-align: center;
+}
+
+.nav__about-close:hover {
+  cursor: pointer;
+}
+
+.hamburger {
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 56px;
+  transition: 0.3s all ease;
+}
+
+.hamburger:hover {
+  cursor: pointer;
+}
+
+.bar {
+  position: absolute;
+  display: block;
+  left: 10px;
+  height: 3px;
+  width: 36px;
+  background: white;
+  border-radius: 3px;
+  transition: 0.3s all ease;
+}
+
+.first-bar {
+  top: 12px;
+}
+
+.second-bar {
+  top: 26px;
+}
+
+.third-bar {
+  top: 40px;
+}
 
 /*****************************
 **************** JS GENERATED
@@ -168,8 +292,9 @@ div.wall-item {
 .result__outer-wall {
   display: flex;
   justify-content: space-around;
-  max-width: 440px;
-  margin: 0 auto;
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto 1rem;;
   background: #EEE;
 }
 
@@ -183,4 +308,63 @@ div.wall-item {
 
 .result__specs {
   text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.hide.error {
+  display: none;
+}
+
+.error__description {
+  font-weight: bold;
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+/*****************************
+****************** ANIMATIONS
+*****************************/
+
+.change.nav {
+  left: 0;
+}
+
+.change.nav__about {
+  left: 0;
+  width: 100%;
+}
+
+.change.first-bar {
+  top: 26px;
+  transform: rotate(-45deg);
+}
+
+.change.second-bar {
+  opacity: 0;
+}
+
+.change.third-bar {
+  top: 26px;
+  transform: rotate(45deg);
+}
+
+.change.container {
+  margin-left: 260px;
+}
+
+/*****************************
+*************** MEDIA QUERIES
+*****************************/
+
+@media (max-width: 600px) {
+  .change.nav {
+    width: 100%;
+    padding-left: 3.8rem;
+    padding-right: 3.8rem;
+  }
+
+  .nav__about {
+    padding-left: 3.8rem;
+    padding-right: 3.8rem;
+  }
 }

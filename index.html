@@ -10,15 +10,37 @@
 </head>
 
 <body>
-  <div class="heading">
-    <h1 class="page-header">GALLERIZER</h1>
+  <div class="hamburger">
+    <span class="bar first-bar"></span>
+    <span class="bar second-bar"></span>
+    <span class="bar third-bar"></span>
   </div>
-  <div class="container">
-    <input id="wall-width" type="number" placeholder="WALL WIDTH">
+  <div class="nav">
+    <select id="unit">
+      <option value="units" disabled class="unit">UNITS</option>
+      <option value="inches" selected class="unit">INCHES</option>
+      <option value="centimeters" class="unit">CENTIMETERS</option>
+    </select>
+    <div id="about">
+      <p>ABOUT</p>
+    </div>
+    <div class="nav__about">
+      <p>To use the Decor Calculator, enter the parameters as labeled.</p>
+      <p>Measuring from edge to edge, the results will indicate where to place each hook on the wall, assuming that each item
+        is hung from the middle. This will ensure an even amount of wall space between each item.</p>
+      <p class="nav__about-close">Close</p>
+    </div>
+  </div>
+  <div class="container" id="#container">
+    <input id="wall-width" type="number" placeholder="WALL WIDTH" autofocus>
     <input id="item-width" type="number" placeholder="ITEM WIDTH">
     <input id="item-quantity" type="number" placeholder="ITEM QUANTITY">
-    <button id="calculate">Calculate</button>
-    <div class="margin__and__results">
+    <button id="calculate" value="Calculate" href="#margin__and__results">Calculate</button>
+    <button id="reset" value="Reset">Reset</button>
+    <div class="error" id="error">
+      <p class="error__description"></p>
+    </div>
+    <div class="margin__and__results" id="margin__and__results">
       <div class="margin__section">
         <button class="margin__decrease">-</button>
         <div class="margin__content">
@@ -31,16 +53,9 @@
         <div class="result__outer-wall">
           <div class="result__inner-wall"></div>
         </div>
-        <div class="result__specs"></div>
+        <div class="result__specs" id="result__specs"></div>
       </div>
     </div>
-    <form class="settings">
-      <select id="unit">
-        <option value="" disabled selected>UNITS</option>
-        <option value="inches" class="unit">INCHES</option>
-        <option value="centimeters" class="unit">CENTIMETERS</option>
-      </select>
-    </form>
   </div>
   <script src="assets/scripts/script.js"></script>
 </body>

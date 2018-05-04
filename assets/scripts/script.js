@@ -14,11 +14,14 @@ const marginIncreaseEl = document.querySelector(`.margin__increase`);
 
 // get submit elements
 const calculateEl = document.querySelector(`#calculate`);
+const resetEl = document.querySelector(`#reset`);
 
 // get result elements
 const marginAndResultsEl = document.querySelector(`.margin__and__results`);
 const resultSpecsEl = document.querySelector(`.result__specs`);
 const resultInnerWallEl = document.querySelector(`.result__inner-wall`);
+const errorEl = document.querySelector(`.error`);
+const errorDescriptionEl = document.querySelector(`.error__description`);
 
 // create items to be accessible in global scope
 let wallItems = [];
@@ -40,6 +43,8 @@ function runProgram() {
 
 // evaluate form for errors then calculate
 function evaluate() {
+  errorEl.classList.add(`hide`);
+  errorDescriptionEl.innerHTML = ``;
   let i = null;
   if (!!document.querySelector(`h2.wall-item-title`)) {
     let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
@@ -54,13 +59,13 @@ function evaluate() {
   maxMargin = Math.floor((wallWidth - (itemWidth * itemQuantity)) / (wallWidth) / 2 * 100);
 
   if (wallWidth == `` || itemWidth == `` || itemQuantity == ``) {
-    console.log(`error1`);
-  } else if (itemWidth * itemQuantity > wallWidth) {
-    console.log(`error2`);
+    error(1);
   } else if (wallWidth <= 0 || itemWidth <= 0 || itemQuantity <= 0) {
-    console.log(`error3`);
+    error(2);
+  } else if (itemWidth * itemQuantity > wallWidth) {
+    error(3);
   } else if (itemQuantity % 1 !== 0) {
-    console.log(`error4`);
+    error(4);
   } else {
     if (margin > maxMargin) {
       setMargin(maxMargin);
@@ -74,12 +79,40 @@ function evaluate() {
     };
     calculate(userValues);
     marginAndResultsEl.style.maxHeight = `${marginAndResultsEl.scrollHeight}px`;
+    setTimeout(function () {
+      window.location.href = `#margin__and__results`;
+    }, 201);
     if (i !== null) {
       if (i > itemQuantityEl.value - 1) {
         i = itemQuantityEl.value - 1;
       }
       displaySpecs(i);
     }
+  }
+}
+
+function error(num) {
+  switch (num) {
+    case 1:
+      errorDescriptionEl.innerHTML = `All fields are required.`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
+    case 2:
+      errorDescriptionEl.innerHTML = `Please enter only positive values.`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
+    case 3:
+      errorDescriptionEl.innerHTML = `Not enough wall space!`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
+    case 4:
+      errorDescriptionEl.innerHTML = `Quantity must be a whole number.`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
   }
 }
 
@@ -148,6 +181,10 @@ function displaySpecsTrigger(wallItems) {
     if (currentItem.classList.contains(`wall-item`)) {
       let i = currentItem.getAttribute(`id`);
       displaySpecs(i);
+      changeUnit();
+      setTimeout(function () {
+        window.location.href = "#result__specs";
+      }, 201);
     }
   });
 }
@@ -161,7 +198,7 @@ function displaySpecs(i) {
 function changeUnit() {
   document.querySelector(`#unit`).addEventListener(`change`, function () {
     setUnit();
-    reEvaluate();
+    evaluate();
   });
 }
 
@@ -173,6 +210,7 @@ function setUnit() {
     wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (cm)`);
     itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (cm)`);
   }
+  document.querySelector(`#unit`).addEventListener(`change`, setUnit);
 }
 
 function changeMargin() {
@@ -198,6 +236,18 @@ function setMargin(i) {
   evaluate();
 }
 
+function resetForm() {
+  resetEl.addEventListener(`click`, function () {
+    wallWidthEl.value = ``;
+    itemWidthEl.value = ``;
+    itemQuantityEl.value = ``;
+    marginAndResultsEl.style.maxHeight = null;
+    margin = 0;
+    marginAmountEl.innerHTML = `${margin}%`;
+    wallWidthEl.focus();
+    window.location.href = `#container`;
+  });
+}
 
 /*****************************
  ********* FRACTION CONVERSION
@@ -247,10 +297,50 @@ function decimalToFraction(number) {
 };
 
 /*****************************
+ ************************* NAV
+ *****************************/
+
+const navEl = document.querySelector(`.nav`);
+const hamburgerEl = document.querySelector(`.hamburger`);
+const hamburgerBarEls = document.querySelectorAll(`.bar`);
+const containerEl = document.querySelector(`.container`);
+const aboutEl = document.querySelector(`#about`);
+const aboutPageEl = document.querySelector(`.nav__about`);
+const navAboutCloseEl = document.querySelector(`.nav__about-close`);
+
+function openNav() {
+  hamburgerEl.addEventListener(`click`, function () {
+    navEl.classList.toggle(`change`);
+    containerEl.classList.toggle(`change`);
+    for (let bar of hamburgerBarEls) {
+      bar.classList.toggle(`change`);
+    }
+    setTimeout(function () {
+      aboutPageEl.classList.remove(`change`);
+    }, 300);
+  })
+}
+
+function openAbout() {
+  aboutEl.addEventListener(`click`, function () {
+    aboutPageEl.classList.add(`change`);
+  })
+}
+
+function closeAbout() {
+  navAboutCloseEl.addEventListener(`click`, function () {
+    aboutPageEl.classList.remove(`change`);
+  })
+}
+
+/*****************************
  ***************** RUN PROGRAM
  *****************************/
 
 runProgram();
 changeMargin();
-changeUnit();
 setUnit();
+openNav();
+openAbout();
+closeAbout();
+resetForm();
