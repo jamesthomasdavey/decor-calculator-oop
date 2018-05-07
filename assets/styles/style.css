@@ -207,9 +207,9 @@ button:hover {
 }
 
 .nav__about {
-  position: fixed;
+  position: absolute;
   z-index: 9995;
-  left: -100%;
+  left: -260px;
   top: 0;
   width: 260px;
   height: 100%;
@@ -217,7 +217,7 @@ button:hover {
   padding-left: 1.2rem;
   padding-right: 1.2rem;
   background: #CA7B46;
-  transition: 0.3s all ease;
+  transition: .3s all ease;
 }
 
 .nav__about p {
@@ -292,7 +292,7 @@ div.wall-item:nth-child(3n+2) {
 }
 
 div.wall-item:nth-child(3n+3) {
-  background: rgb(219, 190, 158);
+  background: #DFAE8B;
 }
 
 .wall-item:hover {
@@ -350,6 +350,7 @@ div.wall-item:nth-child(3n+3) {
 }
 
 .change.nav__about {
+  width: 100%;
   left: 0;
 }
 
@@ -382,7 +383,6 @@ div.wall-item:nth-child(3n+3) {
     padding-right: 3.8rem;
   }
   .nav__about {
-    width: 100%;
     padding-left: 3.8rem;
     padding-right: 3.8rem;
   }

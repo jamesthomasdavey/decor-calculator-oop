@@ -19,6 +19,7 @@ const resetEl = document.querySelector(`#reset`);
 // get result elements
 const marginAndResultsEl = document.querySelector(`.margin__and__results`);
 const resultSpecsEl = document.querySelector(`.result__specs`);
+const resultOuterWallEl = document.querySelector(`.result__outer-wall`)
 const resultInnerWallEl = document.querySelector(`.result__inner-wall`);
 const errorEl = document.querySelector(`.error`);
 const errorDescriptionEl = document.querySelector(`.error__description`);
@@ -76,7 +77,7 @@ function evaluate() {
     error(4);
   } else {
 
-    // if margin is too large, it sets margin to current maximum
+    // if margin is too large, it sets margin to maxMargin
     if (margin > maxMargin) {
       margin = maxMargin;
     }
@@ -90,7 +91,7 @@ function evaluate() {
       unit
     };
 
-    // runs calculation function using uservalues as an argument
+    // runs calculation function using uservalues as an argument. the "i" indicates the wallItem number from the prior session (if it exists) so that it can be displayed at the end of the calculate function
     calculate(userValues, i);
   }
 }
@@ -188,6 +189,7 @@ function WallItem(userValues, i) {
   <p>Center: ${this.center}</p>`;
 }
 
+// clears any possible wall item divs and adds them back
 function addToHTML(wallItems) {
   resultInnerWallEl.innerHTML = ``;
   for (let wallItem of wallItems) {
@@ -197,7 +199,7 @@ function addToHTML(wallItems) {
 
 // adds event listener to display specs for item corresponding to div
 function displaySpecsTrigger() {
-  resultInnerWallEl.addEventListener(`click`, function (e) {
+  resultOuterWallEl.addEventListener(`click`, function (e) {
     let currentItem = e.target;
     if (currentItem.classList.contains(`wall-item`)) {
       let i = currentItem.getAttribute(`id`);
@@ -206,6 +208,7 @@ function displaySpecsTrigger() {
   });
 }
 
+// listens for a unit change. if there are result specs on display, it evaluates again
 function changeUnit() {
   document.querySelector(`#unit`).addEventListener(`change`, function () {
     let i = null;
@@ -220,6 +223,7 @@ function changeUnit() {
   });
 }
 
+// listens for margin change and evaluates again. does not need to check for result specs, since users would not be able to see margin change if result specs were unavailable
 function changeMargin() {
   marginDecreaseEl.addEventListener(`click`, function () {
     if (margin > 0) {
@@ -235,6 +239,7 @@ function changeMargin() {
   });
 }
 
+// resets the whole form, brings user back to the top of the page, and focuses on the first form item
 function resetForm() {
   resetEl.addEventListener(`click`, function () {
     wallWidthEl.value = ``;
@@ -254,6 +259,7 @@ function resetForm() {
  ********* FRACTION CONVERSION
  *****************************/
 
+// rounds the number to appropriate decimal place depending on the unit, and sends it to toFraction if the unit is inches
 function rounder(number, unit) {
   if (unit === `inches`) {
     return toFraction(Math.round(16 * number) / 16) + `"`;
@@ -262,6 +268,7 @@ function rounder(number, unit) {
   }
 }
 
+// splits the non-whole part of the number and sends it to decimalToFraction
 function toFraction(number) {
   if (number % 1 === 0) {
     return number.toString();
@@ -273,6 +280,7 @@ function toFraction(number) {
   }
 };
 
+// converts any decimal to a fraction. this was stolen from somebody else
 function decimalToFraction(number) {
   var numerator = 1.0;
   var denominator = 1.0;
