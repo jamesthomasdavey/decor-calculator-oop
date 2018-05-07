@@ -55,6 +55,7 @@ input {
   margin: 1rem auto;
   height: 2.7rem;
   padding: 0.5rem;
+  padding-bottom: 1.4rem;
   background: transparent;
   color: #ffffff;
   font-family: "Open Sans", sans-serif;
@@ -153,7 +154,7 @@ button:hover {
 *****************************/
 
 .nav {
-  position: absolute;
+  position: fixed;
   z-index: 999;
   left: -260px;
   top: 0;
@@ -190,7 +191,7 @@ button:hover {
 
 #about {
   width: 100%;
-  height: 56px;
+  height: 59px;
   font-size: 1.1rem;
   border-bottom: 2px solid #ffffff;
   display: flex;
@@ -201,14 +202,14 @@ button:hover {
   cursor: pointer;
 }
 
-#about > p {
+#about>p {
   margin: auto 0;
 }
 
 .nav__about {
-  position: absolute;
+  position: fixed;
   z-index: 9995;
-  left: -260px;
+  left: -100%;
   top: 0;
   width: 260px;
   height: 100%;
@@ -277,21 +278,21 @@ div.wall-item {
   height: 100px;
   display: flex;
   margin: auto 0;
-  border: 1px solid black;
-  background: #CCCCCC;
-  color: black;
+  color: white;
+  font-weight: bold;
+  overflow: hidden;
 }
 
-div.wall-item:nth-child(3n + 1) {
+div.wall-item:nth-child(3n+1) {
   background: #A9B7C0;
 }
 
-div.wall-item:nth-child(3n + 2) {
-  background: #C7D8C6;
+div.wall-item:nth-child(3n+2) {
+  background: #a8c9a6;
 }
 
-div.wall-item:nth-child(3n + 3) {
-  background: #EFD9C1;
+div.wall-item:nth-child(3n+3) {
+  background: rgb(219, 190, 158);
 }
 
 .wall-item:hover {
@@ -308,7 +309,8 @@ div.wall-item:nth-child(3n + 3) {
   justify-content: space-around;
   width: 90%;
   max-width: 500px;
-  margin: 0 auto 1rem;;
+  margin: 0 auto 1rem;
+  ;
   background: #EEE;
 }
 
@@ -349,7 +351,6 @@ div.wall-item:nth-child(3n + 3) {
 
 .change.nav__about {
   left: 0;
-  width: 100%;
 }
 
 .change.first-bar {
@@ -380,8 +381,8 @@ div.wall-item:nth-child(3n + 3) {
     padding-left: 3.8rem;
     padding-right: 3.8rem;
   }
-
   .nav__about {
+    width: 100%;
     padding-left: 3.8rem;
     padding-right: 3.8rem;
   }

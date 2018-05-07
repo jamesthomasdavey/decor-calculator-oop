@@ -1,6 +1,6 @@
 /*****************************
-************ GLOBAL VARIABLES
-*****************************/
+ ************ GLOBAL VARIABLES
+ *****************************/
 
 // get form elements
 const bodyEl = document.querySelector(`body`);
@@ -29,8 +29,8 @@ let margin = 0;
 let maxMargin = 0;
 
 /*****************************
-*********** PROGRAM FUNCTIONS
-*****************************/
+ *********** PROGRAM FUNCTIONS
+ *****************************/
 
 // enables click and pressing enter
 function runProgram() {
@@ -44,10 +44,10 @@ function runProgram() {
 
 // evaluate form for errors then calculate
 function evaluate() {
-  
+
   //hides errors that may have occured earlier
   errorEl.classList.add(`hide`);
-  
+
   // checks if item specs were previously on display, and gets reference number
   let i = null;
   if (!!document.querySelector(`h2.wall-item-title`)) {
@@ -55,7 +55,7 @@ function evaluate() {
     id = id.split(`-`);
     i = Number(id[id.length - 1]);
   }
-  
+
   // grabs values from html elements
   let wallWidth = Number(wallWidthEl.value);
   let itemWidth = Number(itemWidthEl.value);
@@ -64,7 +64,7 @@ function evaluate() {
 
   // calculates maximum amount of margin allowed on sides
   maxMargin = Math.floor((wallWidth - (itemWidth * itemQuantity)) / (wallWidth) / 2 * 100);
-  
+
   // scans for errors, and sends error code to error function
   if (wallWidth == `` || itemWidth == `` || itemQuantity == ``) {
     error(1);
@@ -75,7 +75,7 @@ function evaluate() {
   } else if (itemQuantity % 1 !== 0) {
     error(4);
   } else {
-    
+
     // if margin is too large, it sets margin to current maximum
     if (margin > maxMargin) {
       margin = maxMargin;
@@ -89,7 +89,7 @@ function evaluate() {
       margin,
       unit
     };
-    
+
     // runs calculation function using uservalues as an argument
     calculate(userValues, i);
   }
@@ -99,25 +99,25 @@ function evaluate() {
 function error(num) {
   switch (num) {
     case 1:
-    errorDescriptionEl.innerHTML = `All fields are required.`;
-    errorEl.classList.remove(`hide`);
-    window.location.href = `#error`;
-    break;
+      errorDescriptionEl.innerHTML = `All fields are required.`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
     case 2:
-    errorDescriptionEl.innerHTML = `Please enter only positive values.`;
-    errorEl.classList.remove(`hide`);
-    window.location.href = `#error`;
-    break;
+      errorDescriptionEl.innerHTML = `Please enter only positive values.`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
     case 3:
-    errorDescriptionEl.innerHTML = `Not enough wall space!`;
-    errorEl.classList.remove(`hide`);
-    window.location.href = `#error`;
-    break;
+      errorDescriptionEl.innerHTML = `Not enough wall space!`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
     case 4:
-    errorDescriptionEl.innerHTML = `Quantity must be a whole number.`;
-    errorEl.classList.remove(`hide`);
-    window.location.href = `#error`;
-    break;
+      errorDescriptionEl.innerHTML = `Quantity must be a whole number.`;
+      errorEl.classList.remove(`hide`);
+      window.location.href = `#error`;
+      break;
   }
 }
 
@@ -135,8 +135,9 @@ function calculate(userValues, i) {
   } else {
     resultSpecsEl.innerHTML = wallItems[0].specs;
   }
+  marginAmountEl.innerHTML = `${margin}%`;
   marginAndResultsEl.style.maxHeight = `${marginAndResultsEl.scrollHeight}px`;
-  setTimeout(function() {
+  setTimeout(function () {
     window.location.href = `#result`;
   }, 205);
 }
@@ -184,7 +185,7 @@ function WallItem(userValues, i) {
     <p class="wall-item-number">${this.id + 1}</p>
   </div>`;
   this.specs = `<h2 class="wall-item-title" id="${this.id}">Item ${this.id + 1}</h2>
-  <p>Center ${this.center}</p>`;
+  <p>Center: ${this.center}</p>`;
 }
 
 function addToHTML(wallItems) {
@@ -207,7 +208,15 @@ function displaySpecsTrigger() {
 
 function changeUnit() {
   document.querySelector(`#unit`).addEventListener(`change`, function () {
-    evaluate();
+    let i = null;
+    if (!!document.querySelector(`h2.wall-item-title`)) {
+      let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
+      id = id.split(`-`);
+      i = Number(id[id.length - 1]);
+    }
+    if (i !== null) {
+      evaluate();
+    }
   });
 }
 
@@ -215,14 +224,12 @@ function changeMargin() {
   marginDecreaseEl.addEventListener(`click`, function () {
     if (margin > 0) {
       margin--;
-      marginAmountEl.innerHTML = `${margin}%`;
       evaluate();
     }
   });
   marginIncreaseEl.addEventListener(`click`, function () {
     if (margin < maxMargin) {
       margin++;
-      marginAmountEl.innerHTML = `${margin}%`;
       evaluate();
     }
   });
@@ -237,13 +244,15 @@ function resetForm() {
     margin = 0;
     marginAmountEl.innerHTML = `${margin}%`;
     marginAndResultsEl.style.maxHeight = null;
+    errorEl.classList.add(`hide`);
+    window.location.href = `#`;
     wallWidthEl.focus();
   });
 }
 
 /*****************************
-********* FRACTION CONVERSION
-*****************************/
+ ********* FRACTION CONVERSION
+ *****************************/
 
 function rounder(number, unit) {
   if (unit === `inches`) {
@@ -289,8 +298,8 @@ function decimalToFraction(number) {
 };
 
 /*****************************
-************************* NAV
-*****************************/
+ ************************* NAV
+ *****************************/
 
 const navEl = document.querySelector(`.nav`);
 const hamburgerEl = document.querySelector(`.hamburger`);
@@ -326,8 +335,8 @@ function closeAbout() {
 }
 
 /*****************************
-***************** RUN PROGRAM
-*****************************/
+ ***************** RUN PROGRAM
+ *****************************/
 
 runProgram();
 changeMargin();
