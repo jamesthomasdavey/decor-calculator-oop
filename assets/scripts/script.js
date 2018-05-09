@@ -52,9 +52,7 @@ function evaluate() {
   // checks if item specs were previously on display, and gets reference number
   let i = null;
   if (!!document.querySelector(`h2.wall-item-title`)) {
-    let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
-    id = id.split(`-`);
-    i = Number(id[id.length - 1]);
+    i = Number(document.querySelector(`h2.wall-item-title`).getAttribute(`id`));
   }
 
   // grabs values from html elements
@@ -160,6 +158,30 @@ function calcInnerWallWidth(userValues) {
 // creates a new object for each wall item
 function createWallItems(userValues) {
   let wallItems = [];
+
+  // constructor for wall items
+  function WallItem(userValues, i) {
+    let {
+      wallWidth,
+      itemWidth,
+      itemQuantity,
+      leftOver,
+      unit
+    } = userValues;
+    this.i = i;
+    this.width = itemWidth;
+    this.widthPercent = (itemWidth / wallWidth) * 100;
+    let spaceBetween = (wallWidth - itemWidth * itemQuantity) / (itemQuantity + 1);
+    let number = ((this.i + 1) * spaceBetween) + (this.i * itemWidth) + (itemWidth / 2) + leftOver;
+    this.center = rounder(number, unit);
+    this.div = `<div class="wall-item" id="${this.i}" style="width: ${this.widthPercent}%">
+    <p class="wall-item-number">${this.i + 1}</p>
+  </div>`;
+    this.specs = `<h2 class="wall-item-title" id="${this.i}">Item ${this.i + 1}</h2>
+  <p>Center: ${this.center}</p>`;
+  }
+
+  // loop to use constructor
   for (let i = 0; i < userValues.itemQuantity; i++) {
     let wallItem = new WallItem(userValues, i);
     wallItems.push(wallItem);
@@ -168,26 +190,7 @@ function createWallItems(userValues) {
 }
 
 // constructor for wall items
-function WallItem(userValues, i) {
-  let {
-    wallWidth,
-    itemWidth,
-    itemQuantity,
-    leftOver,
-    unit
-  } = userValues;
-  this.id = i;
-  this.width = itemWidth;
-  this.widthPercent = (itemWidth / wallWidth) * 100;
-  let spaceBetween = (wallWidth - itemWidth * itemQuantity) / (itemQuantity + 1);
-  let number = ((i + 1) * spaceBetween) + (i * itemWidth) + (itemWidth / 2) + leftOver;
-  this.center = rounder(number, unit);
-  this.div = `<div class="wall-item" id="${this.id}" style="width: ${this.widthPercent}%">
-    <p class="wall-item-number">${this.id + 1}</p>
-  </div>`;
-  this.specs = `<h2 class="wall-item-title" id="${this.id}">Item ${this.id + 1}</h2>
-  <p>Center: ${this.center}</p>`;
-}
+
 
 // clears any possible wall item divs and adds them back
 function addToHTML(wallItems) {
@@ -211,11 +214,10 @@ function displaySpecsTrigger() {
 // listens for a unit change. if there are result specs on display, it evaluates again
 function changeUnit() {
   document.querySelector(`#unit`).addEventListener(`change`, function () {
+    setInitialUnit();
     let i = null;
     if (!!document.querySelector(`h2.wall-item-title`)) {
-      let id = document.querySelector(`h2.wall-item-title`).getAttribute(`id`);
-      id = id.split(`-`);
-      i = Number(id[id.length - 1]);
+      i = Number(document.querySelector(`h2.wall-item-title`).getAttribute(`id`));
     }
     if (i !== null) {
       evaluate();
@@ -253,6 +255,17 @@ function resetForm() {
     window.location.href = `#`;
     wallWidthEl.focus();
   });
+}
+
+function setInitialUnit() {
+  let unit = unitEl[document.querySelector(`#unit`).selectedIndex].value;
+  if (unit === `inches`) {
+    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (in)`);
+    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (in)`);
+  } else if (unit === `centimeters`) {
+    wallWidthEl.setAttribute(`placeholder`, `WALL WIDTH (cm)`);
+    itemWidthEl.setAttribute(`placeholder`, `ITEM WIDTH (cm)`);
+  }
 }
 
 /*****************************
@@ -351,6 +364,7 @@ changeMargin();
 resetForm();
 displaySpecsTrigger();
 changeUnit();
+setInitialUnit();
 
 openNav();
 openAbout();
