@@ -2,8 +2,9 @@
  ************ GLOBAL VARIABLES
  *****************************/
 
+const bodyEl = document.querySelector(`body`); // only need this for the keypress event listener
+
 // get form elements
-const bodyEl = document.querySelector(`body`);
 const wallWidthEl = document.querySelector(`#wall-width`);
 const itemWidthEl = document.querySelector(`#item-width`);
 const itemQuantityEl = document.querySelector(`#item-quantity`);
@@ -188,9 +189,6 @@ function createWallItems(userValues) {
   }
   return wallItems;
 }
-
-// constructor for wall items
-
 
 // clears any possible wall item divs and adds them back
 function addToHTML(wallItems) {
